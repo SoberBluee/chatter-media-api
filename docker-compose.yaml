@@ -1,0 +1,26 @@
+version: "3"
+services:
+# MEDIA SERVER API
+  media-api:
+    image: 'chatter-media-api'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    volumes:
+      - /Users/ethandonovan/Documents/Github/chatter-media-api:/app/media-api
+    command: php artisan serve
+
+# SQL SERVER
+  sql-server:
+    image: 'mcr.microsoft.com/azure-sql-edge'
+    ports:
+        - '1433:1433'
+    volumes:
+        - /Users/ethandonovan/Documents/GitHub/chatter-media-api/:/app/sql_server
+    environment:
+        ACCEPT_EULA: 'Y'
+        MSSQL_SA_PASSWORD: "Ethan@docker1"
