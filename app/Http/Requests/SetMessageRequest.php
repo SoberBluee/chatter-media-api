@@ -13,7 +13,7 @@ class SetMessageRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,7 +25,7 @@ class SetMessageRequest extends FormRequest
     {
         return [
             'sender' => 'required|integer',
-            'reviever' => 'required|integer',
+            'reciever' => 'required|integer',
             'message' => 'required| string',
         ];
     }

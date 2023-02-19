@@ -25,4 +25,13 @@ Route::prefix('/v1')->group(function(){
         Route::delete('{message_id}', [MessageController::class, 'deleteMessage']);
         Route::post('edit', [MessageController::class, 'editMessage']);
     });
+
+    Route::prefix('posts')->group(function(){
+        Route::get('get-all-posts', [PostsController::class,'getAllPosts']);
+        Route::post('create-post', [PostsController::class, 'setPost']);
+        Route::get('{post_id}', [PostsController::class, 'getPost']);
+        Route::delete('{post_id}', [PostsController::class, 'deletePost']);
+        Route::post('/edit', [PostsController::class, 'editPost']);
+    });
+
 });

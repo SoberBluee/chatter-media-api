@@ -4,35 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use \Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+
 use App\Http\Requests\SetMessageRequest;
 use App\Http\Requests\GetMessagesRequest;
-use Illuminate\Http\Request;
+use App\Http\Services\MessageService;
 
 class MessageController extends Controller
 {
-    public function testFunction(){
-        dd(DB::table('message_table')->where('id', 1)->get());
-        return([
-            'data' => 'something'
-        ]);
+    function __construct(private MessageService $messageService){
     }
 
     public function setMessage(SetMessageRequest $request){
         try{
 
             $messages = new Message();
-
+            // build message
             $messages->user_sender_id = $request->input('sender');
             $messages->user_reciever_id = $request->input('reciever');
             $messages->message = $request->input('message');
             $messages->created_at = Carbon::now();
             $messages->updated_at = Carbon::now();
-
             $messages->save();
 
             return([
-                'data' => $messages->toArray(),
+                'data' => $this->messageService->getlatestMessage($messages->user_sender_id, $messages->user_reciever_id),
                 'message' => 'messages created successfully',
                 'status' => 200,
             ]);
@@ -51,10 +46,7 @@ class MessageController extends Controller
             $sender = $request->input('senderId');
             $reciever = $request->input('recieverId');
             // return messages that are of the currently logged in user and the selectedUser from the sidebar
-            $result = DB::table('message_table')
-                ->where(['user_sender_id' => $sender, 'user_reciever_id' => $reciever])
-                ->orWhere(['user_sender_id'=> $reciever, 'user_reciever_id' => $reciever])
-                ->get();
+            $result = $this->messageService->getLatestMessage($sender, $reciever);
             return([
                 'data' => $result,
                 'message'=> "",
