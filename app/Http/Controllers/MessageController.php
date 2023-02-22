@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditMessageRequest;
 use App\Models\Message;
 use \Illuminate\Support\Carbon;
 
@@ -67,8 +68,31 @@ class MessageController extends Controller
 
     }
 
-    public function editMessage(){
-        dd("edit");
+    public function editMessage(EditMessageRequest $request){
+        $message = $request->input('message');
+        $sender = $request->input('sender');
+        $reciever = $request->input('reciever');
+        try{
+            $messageToEdit = Message::find($request->input('id'));
+            $messageToEdit->message = $message;
+            $messageToEdit->updated_at = Carbon::now();
+
+            $messageToEdit->save();
+
+            return([
+                'data' => $messageToEdit,
+                'message' => 'Message updated successfully',
+                'status' => 200,
+            ]);
+        }catch(\Exception $e){
+            dd($e);
+            return([
+                'data' => '',
+                'message' => 'Something went wrong when updating your message',
+                'status' => 200,
+            ]);
+        }
+
 
     }
 }
