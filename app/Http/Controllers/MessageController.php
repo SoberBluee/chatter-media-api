@@ -42,6 +42,9 @@ class MessageController extends Controller
         }
     }
 
+    /**
+     * Gets messges by senderId and recieverId
+     */
     public function getMessages(GetMessagesRequest $request){
         try{
             $sender = $request->input('senderId');
@@ -63,8 +66,32 @@ class MessageController extends Controller
 
     }
 
-    public function deleteMessages(){
-        dd("del");
+    /**
+     * Deletes message but keeps row in db
+     * @param string $messageId
+     */
+    public function deleteMessages($messageId){
+        assert($messageId !== null, 'Please provide a messageId');
+
+        try{
+            // Find message to delete
+            $messageToDelete = Message::find($messageId);
+            $messageToDelete->message = 'Message has been deleted';
+            $messageToDelete->save();
+
+            return([
+                'data' => $messageToDelete,
+                'message' => 'Message has been deleted',
+                'status' => 200,
+            ]);
+        }catch(\Exception $e){
+            return([
+                'data' => $e->getMessage(),
+                'error' => 'Soething went wrong with deleting your message',
+                'status' => 400,
+            ]);
+        };
+
 
     }
 

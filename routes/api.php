@@ -20,9 +20,10 @@ Route::prefix('/v1')->group(function(){
     Route::get('test', [MessageController::class, 'testFunction']);
 
     Route::prefix('messages')->group(function(){
+        // Route::model('', )
         Route::get('/', [MessageController::class, 'getMessages']);
         Route::post('set-message', [MessageController::class, 'setMessage']);
-        Route::delete('{message_id}', [MessageController::class, 'deleteMessage']);
+        Route::delete('{message_id}', [MessageController::class, 'deleteMessages']);
         Route::post('edit', [MessageController::class, 'editMessage']);
     });
 
