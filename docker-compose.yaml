@@ -2,25 +2,93 @@ version: "3"
 services:
 # MEDIA SERVER API
   media-api:
-    image: 'chatter-media-api'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '3001:3001'
     volumes:
-      - /Users/ethandonovan/Documents/Github/chatter-media-api:/app/media-api
-    command: php artisan serve
-
-# SQL SERVER
-  sql-server:
-    image: 'mcr.microsoft.com/azure-sql-edge'
+        - .:/app/media-api
     ports:
-        - '1433:1433'
-    volumes:
-        - /Users/ethandonovan/Documents/GitHub/chatter-media-api/:/app/sql_server
+        - 3001:3001
+    networks:
+        - chatter_network
     environment:
-        ACCEPT_EULA: 'Y'
-        MSSQL_SA_PASSWORD: "Ethan@docker1"
+        MYSQL_HOST: chatter-mysql
+        MYSQL_USER: sa
+        MYSQL_PASSWORD: Ethan@docker1
+        MYSQL_DB: master
+
+  chatter-web:
+    build:
+      context: ../chatter-web
+      dockerfile: ../chatter-web/Dockerfile
+    volumes:
+        - ../chatter-web:/app/chatter-web
+    ports:
+      - 4200:4200
+
+  #postgres
+  postgres:
+    image: 'postgres:14.2'
+    ports:
+        - '5432:5432'
+    restart: always
+    volumes:
+        - 'dbdata:/var/lib/postgresql/data'
+    healthcheck:
+        test: [ "CMD", "pg_isready" ]
+        retries: 3
+        timeout: 5s
+    environment:
+        POSTGRES_USER: 'dev'
+        POSTGRES_PASSWORD: 'Ethan@docker1'
+        POSTGRES_DATABASE: 'dev'
+
+  # # SQL SERVER
+  # sql-server:
+  #   container_name: sql-server
+  #   image: 'mcr.microsoft.com/azure-sql-edge'
+  #   ports:
+  #       - '1433:1433'
+  #   volumes:
+  #       - dbdata:/app/sql-server/
+  #   environment:
+  #       ACCEPT_EULA: 'Y'
+  #       MSSQL_SA_PASSWORD: "Ethan@docker1"
+volumes:
+  dbdata:
+    driver: local
+networks:
+  chatter_network:
+    driver: bridge
+
+
+
+# =============================== If ever want to include nginx with container ===============================
+  # chatter-media-nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: ./nginx/Dockerfile
+  #   volumes:
+  #   - ./public:/usr/src/app/public
+  #   ports:
+  #     - 8000:80
+  #   depends_on:
+  #     - media-api
+  #   environment:
+  #     NGINX_FPM_HOST: media-api
+  #     NGINX_ROOT: /usr/src/app/public
+  #   networks:
+  #     - app_network
+
+    # image: 'chatter-media-api'
+    # extra_hosts:
+    #   - 'host.docker.internal:host-gateway'
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    # ports:
+    #   - '3001:3001'
+    # volumes:
+    #   - /Users/ethandonovan/Documents/Github/chatter-media-api:/app/media-api
+    # command: php artisan serve
+

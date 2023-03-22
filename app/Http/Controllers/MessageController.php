@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Requests\EditMessageRequest;
 use App\Models\Message;
@@ -15,9 +16,16 @@ class MessageController extends Controller
     function __construct(private MessageService $messageService){
     }
 
+    public function testFunction(){
+        try {
+            DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            die("Could not connect to the database.  Please check your configuration. error:" . $e );
+        }
+    }
+
     public function setMessage(SetMessageRequest $request){
         try{
-
             $messages = new Message();
             // build message
             $messages->user_sender_id = $request->input('sender');
