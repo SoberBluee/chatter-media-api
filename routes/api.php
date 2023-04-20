@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,22 +17,21 @@ use App\Http\Controllers\MessageController;
 |
 */
 
-Route::prefix('/v1')->group(function(){
+Route::prefix('/v1')->group(function () {
     Route::get('test', [MessageController::class, 'testFunction']);
 
-    Route::prefix('messages')->group(function(){
+    Route::prefix('messages')->group(function () {
         Route::get('/', [MessageController::class, 'getMessages']);
         Route::post('set-message', [MessageController::class, 'setMessage']);
         Route::delete('{message_id}', [MessageController::class, 'deleteMessages']);
         Route::post('edit', [MessageController::class, 'editMessage']);
     });
 
-    Route::prefix('posts')->group(function(){
-        Route::get('get-all-posts', [PostsController::class,'getAllPosts']);
-        Route::post('create-post', [PostsController::class, 'setPost']);
-        Route::get('{post_id}', [PostsController::class, 'getPost']);
-        Route::delete('{post_id}', [PostsController::class, 'deletePost']);
-        Route::post('/edit', [PostsController::class, 'editPost']);
+    Route::prefix('posts')->group(function () {
+        Route::get('get-all-posts', [PostController::class, 'getAllPosts']);
+        Route::post('create-post', [PostController::class, 'setPost']);
+        Route::get('{post_id}', [PostController::class, 'getPost']);
+        Route::delete('{post_id}', [PostController::class, 'deletePost']);
+        Route::post('/edit', [PostController::class, 'editPost']);
     });
-
 });
