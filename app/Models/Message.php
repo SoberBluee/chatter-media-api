@@ -28,6 +28,5 @@ class Message extends Model
         'updated_at',
     ];
 
-    protected $hidden = [
-    ];
+    protected $hidden = [];
 }

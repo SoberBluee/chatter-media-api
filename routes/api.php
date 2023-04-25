@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +34,6 @@ Route::prefix('/v1')->group(function () {
         Route::get('{post_id}', [PostController::class, 'getPost']);
         Route::delete('{post_id}', [PostController::class, 'deletePost']);
         Route::post('/edit', [PostController::class, 'editPost']);
+        Route::post('{postId}/comment', [CommentController::class, 'setComment']);
     });
 });
