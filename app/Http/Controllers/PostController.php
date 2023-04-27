@@ -86,8 +86,9 @@ class PostController extends Controller
     public function getAllPosts()
     {
         try {
+            $result = Post::with('comments')->get()->toArray();
             return ([
-                'data' => Post::with('comments')->get()->toArray(),
+                'data' => $result,
                 'message' => 'Successfully retrieved data',
                 'status' => 200,
             ]);

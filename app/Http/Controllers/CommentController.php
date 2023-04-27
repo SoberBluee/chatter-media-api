@@ -4,62 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
-use App\Models\Post;
-use Carbon\Carbon;
 use \Exception;
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+use App\Http\Services\CommentService;
 
 class CommentController extends Controller
 {
 
-    public function setComment($postId, Request $request)
+    public function __construct(private CommentService $commentService)
     {
-        $parentCommentId = (int) $request->input('parentCommentId');
-        $comment = (string)$request->input('comment');
-        $userId = (int)$request->input('userId');
-
-        if ($parentCommentId !== 0) {
-            $parentComment = Comment::find($parentCommentId);
-            assert($parentComment, 'Parent comment does not exist');
-        }
-
-        try {
-            // dd($parentCommentId, $comment, $userId, $postId);
-            // $comment = Comment::create([
-            //     'parentCommentId' => $parentCommentId ? $parentCommentId : null,
-            //     'postId' => $postId,
-            //     "userId" => $userId,
-            //     'comment' => $comment,
-            //     'created_at' => Carbon::now(),
-            //     'modified_at' => Carbon::now(),
-            // ]);
-            $comment = new Comment();
-            $comment->parentCommentId = $parentCommentId;
-            $comment->comment = $comment;
-            $comment->userId = $userId;
-            $comment->created_at = Carbon::now();
-            $comment->modified_at = Carbon::now();
-            // DB::enableQueryLog();
-            $comment->save();
-            // dd(DB::getQueryLog());
-
-            return ([
-                'data' => $comment,
-                'message' => 'Comment saved successfully',
-                'status' => 200,
-            ]);
-        } catch (Exception $e) {
-            dd($e);
-            return ([
-                'data' => $e,
-                'message' => 'Something went wrong',
-                'status' => 400
-
-            ]);
-        }
     }
 
-    public function getUserComments(Request $request)
+    public function setComment($postId, Request $request)
     {
+        $commentData = $request->input("commentData");
+        $parentCommentId = $commentData['parentCommentId'];
+        $comment = $commentData['comment'];
+        $userId = $commentData['userId'];
+
+        return $this->commentService->setComment($parentCommentId, $comment, $userId, $postId);
+    }
+
+    public function editComment(Request $request)
+    {
+        $commentId = $request->input('commentId');
+        $newComment = $request->input('comment');
+        $postId = $request->input('postId');
+
+        return $this->commentService->editComment($commentId, $newComment, $postId);
+    }
+
+    /**
+     * Will delete a comment when given a commentId
+     *
+     * @param Integer $commentId
+     * @return JsonResponse
+     */
+    public function deleteUserComment($commentId)
+    {
+        try {
+            $result = Comment::find($commentId)->delete();
+            return ([
+                'data' => $result,
+                'message' => 'Comment was successfully deleted',
+                'status' => 200
+            ]);
+        } catch (Exception $e) {
+            return ([
+                'data' => $e,
+                'message' => 'Something went wrong deleting your comment',
+                'status' => 400,
+            ]);
+        }
     }
 }
