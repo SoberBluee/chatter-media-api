@@ -10,24 +10,6 @@ use \Exception;
 class PostController extends Controller
 {
     /**
-     * name: getPosts
-     * Description: will get a post given an id
-     */
-    public function getPost(int $user_id)
-    {
-        try {
-            Post::where('id', $user_id)->orderBy('')->get();
-        } catch (Exception $e) {
-            return ([
-                'data' => '',
-                'message' => '',
-                'status' => '',
-            ]);
-        }
-    }
-
-
-    /**
      * name: setPost
      * description: will create a new post
      */
@@ -50,25 +32,22 @@ class PostController extends Controller
             /**
              * might need to return post data for other stuff
              */
-            return ([
+            return response()->json([
                 'data' => '',
-                'message' => 'Post saved successfully',
-                'status' => 200,
-            ]);
+                'message' => 'Post saved successfully'
+            ], 200);
         } catch (Exception $e) {
-            return ([
+            return response()->json([
                 'data' => $e,
-                'message' => 'something went wrong with your upload',
-                'status' => 400,
-            ]);
+                'message' => 'Something went wrong with your upload'
+            ], 400);
         }
     }
 
     public function deletePost($post_id)
     {
         try {
-            // DB::delete('posts')->where('id', $post_id);
-
+            Post::find($post_id)->delete();
             return ([
                 'data' => '',
                 'message' => '',
@@ -76,7 +55,7 @@ class PostController extends Controller
             ]);
         } catch (Exception $e) {
             return ([
-                'data' => '',
+                'data' => $e,
                 'message' => '',
                 'status' => 400,
             ]);
@@ -86,18 +65,15 @@ class PostController extends Controller
     public function getAllPosts()
     {
         try {
-            $result = Post::with('comments')->get()->toArray();
-            return ([
-                'data' => $result,
-                'message' => 'Successfully retrieved data',
-                'status' => 200,
-            ]);
+            return response()->json([
+                'data' => Post::with('comments')->get()->toArray(),
+                'message' => 'Successfully retrieved data'
+            ], 200);
         } catch (Exception $e) {
-            return ([
-                'data' => '',
-                'message' => 'something went wrong with getting yours posts',
-                'status' => 400,
-            ]);
+            return response()->json([
+                'data' => $e,
+                'message' => 'Something went wrong with getting your posts'
+            ], 400);
         }
     }
 

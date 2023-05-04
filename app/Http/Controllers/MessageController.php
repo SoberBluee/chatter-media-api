@@ -39,17 +39,15 @@ class MessageController extends Controller
             $messages->updated_at = Carbon::now();
             $messages->save();
 
-            return ([
-                'data' => $this->messageService->getlatestMessage($messages->user_sender_id, $messages->user_reciever_id),
-                'message' => 'messages created successfully',
-                'status' => 200,
-            ]);
+            return response()->json([
+                'data' => $this->messageService->getLatestMessage($messages->user_sender_id, $messages->user_reciever_id),
+                'message' => 'Messages sent',
+            ], 200);
         } catch (\Exception $e) {
-            return ([
-                'data' => '',
-                'message' => $e->getMessage(),
-                'status' => 400,
-            ]);
+            return response()->json([
+                'data' => $e,
+                'message' => "Something went wrong trying to send your message"
+            ], 400);
         }
     }
 
@@ -63,17 +61,16 @@ class MessageController extends Controller
             $reciever = $request->input('recieverId');
             // return messages that are of the currently logged in user and the selectedUser from the sidebar
             $result = $this->messageService->getLatestMessage($sender, $reciever);
-            return ([
+
+            return response()->json([
                 'data' => $result,
-                'message' => "",
-                "status" => 200,
-            ]);
+                'message' => 'Successfully fetched user messages'
+            ], 200);
         } catch (\Exception $e) {
-            return ([
-                'data' => '',
-                'message' => 'failed to get messages',
-                'status' => 400,
-            ]);
+            return response()->json([
+                'data' => $e,
+                'message' => 'Failed to fetch messages'
+            ], 400);
         }
     }
 
@@ -91,17 +88,15 @@ class MessageController extends Controller
             $messageToDelete->message = 'Message has been deleted';
             $messageToDelete->save();
 
-            return ([
+            return response()->json([
                 'data' => $messageToDelete,
-                'message' => 'Message has been deleted',
-                'status' => 200,
-            ]);
+                'message' => 'Message has been delted',
+            ], 200);
         } catch (\Exception $e) {
-            return ([
-                'data' => $e->getMessage(),
-                'error' => 'Soething went wrong with deleting your message',
-                'status' => 400,
-            ]);
+            return response()->json([
+                'data' => $e,
+                'message' => 'Something weng wrong with deleting your message',
+            ], 400);
         };
     }
 
@@ -117,18 +112,15 @@ class MessageController extends Controller
 
             $messageToEdit->save();
 
-            return ([
+            return response()->json([
                 'data' => $messageToEdit,
-                'message' => 'Message updated successfully',
-                'status' => 200,
-            ]);
+                'message' => 'Message was updated successfully',
+            ], 200);
         } catch (\Exception $e) {
-            dd($e);
-            return ([
-                'data' => '',
-                'message' => 'Something went wrong when updating your message',
-                'status' => 200,
-            ]);
+            return response()->json([
+                'data' => $e,
+                'message' => 'Something went wrong when updating your message'
+            ], 400);
         }
     }
 }

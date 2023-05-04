@@ -31,9 +31,13 @@ Route::prefix('/v1')->group(function () {
     Route::prefix('posts')->group(function () {
         Route::get('get-all-posts', [PostController::class, 'getAllPosts']);
         Route::post('create-post', [PostController::class, 'setPost']);
-        Route::get('{post_id}', [PostController::class, 'getPost']);
         Route::delete('{post_id}', [PostController::class, 'deletePost']);
         Route::post('/edit', [PostController::class, 'editPost']);
-        Route::post('{postId}/comment', [CommentController::class, 'setComment']);
+
+        Route::prefix('comment')->group(function () {
+            Route::post('{postId}/setComment', [CommentController::class, 'setComment']);
+            Route::post('{commentId}/editComment', [CommentController::class, 'editComment']);
+            Route::delete('{commentId}', [CommentController::class, 'deleteComment']);
+        });
     });
 });

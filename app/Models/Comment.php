@@ -25,7 +25,6 @@ class Comment extends Model
     {
     }
 
-
     function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);

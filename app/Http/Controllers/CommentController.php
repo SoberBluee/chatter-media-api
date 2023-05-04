@@ -26,36 +26,14 @@ class CommentController extends Controller
         return $this->commentService->setComment($parentCommentId, $comment, $userId, $postId);
     }
 
-    public function editComment(Request $request)
+    public function editComment(Request $request, $commentId)
     {
-        $commentId = $request->input('commentId');
         $newComment = $request->input('comment');
-        $postId = $request->input('postId');
-
-        return $this->commentService->editComment($commentId, $newComment, $postId);
+        return $this->commentService->editComment($commentId, $newComment);
     }
 
-    /**
-     * Will delete a comment when given a commentId
-     *
-     * @param Integer $commentId
-     * @return JsonResponse
-     */
-    public function deleteUserComment($commentId)
+    public function deleteComment($commentId)
     {
-        try {
-            $result = Comment::find($commentId)->delete();
-            return ([
-                'data' => $result,
-                'message' => 'Comment was successfully deleted',
-                'status' => 200
-            ]);
-        } catch (Exception $e) {
-            return ([
-                'data' => $e,
-                'message' => 'Something went wrong deleting your comment',
-                'status' => 400,
-            ]);
-        }
+        return $this->commentService->deleteComment($commentId);
     }
 }
